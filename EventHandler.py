@@ -1,0 +1,179 @@
+
+# coding: utf-8
+
+# In[2]:
+
+
+#Event Manager program
+#Written by Surabhi Shail
+#SUID : 267102671
+#email-id: sshail@syr.edu
+#Course : CIS-600,Principles of Social Media and Data Mining
+#Spring 2019
+#Assignment 1
+#Python Version: 3.7
+
+import datetime
+from time import sleep
+from time import strftime
+
+USER_FIRST_NAME = "TA"
+calendar = {} # Declaring a global Dictionary
+
+#This class is used to format the output of the program
+class color:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+
+#This class is responsible to handle all the operations of the event manager program    
+class EventAdder:
+    
+    def __init__(self,eventname,date):
+        self.en = eventname
+        self.date = date
+        
+    #This function is used to greet the user of this program    
+    def Welcome(self):
+        print (color.PURPLE + "Welcome, " + USER_FIRST_NAME + "." + color.END)
+        print (color.PURPLE + "Calendar is starting" + color.END)
+        print (color.PURPLE + "Today is: " + strftime("%Y-%m-%d") + color.END)
+        print (color.PURPLE + "Current time is: " + strftime("%H:%M:%S") + color.END)
+        print (color.PURPLE + "What would you like to do?" + color.END)
+
+    #The event handler function handles all the action to be taken for each user selections made in this program    
+    def EventHandler(self):
+        start = True
+        
+        while start:
+
+            user_choice = input("A to Add, U to Update, V to View, D to Delete, X to Exit: ")
+            user_choice = user_choice.upper()
+            
+    #If user_choice is to view,then it generates view list only if dictionary contains values.
+            if user_choice == "V":
+            
+                if len(calendar.keys()) < 1:
+                    print("Calendar is empty.")
+                    
+                else:
+                    print(color.BOLD + "\n List Of Event Present in Your Calendar are:" + color.END)
+                    print("-------------------------------------------------------------------------")
+                    print(color.BLUE + "\n      DATE\t\tEVENT NAME\t      " + color.END)
+                    for key, value in calendar.items(): 
+                        print (color.BLUE + "\n      {}\t\t{} \t".format(key, value) + color.END) 
+                    print("-------------------------------------------------------------------------")
+
+    #If user_choice is to update then modifies the existing value in dictionary                
+            elif user_choice == "U":
+                date = input("What date? ")
+                update = input("Enter the update: ")
+                calendar[date] = update
+                print (calendar)
+   
+    #If user_choice is to add new event in the dictionary then we check if event is alredy created or not
+            elif user_choice == "A":
+                
+                option_list = ['Friends Birthday','Parents Anniversary','Doctor Appointment','Interview Slot','Users Choice']
+           
+            #Using List Comprehension to create an option list
+                display_option = [option_list[i] for i in range(len(option_list))]
+                print(color.BOLD)
+                print("Sample Event Name are:")
+                print(display_option)
+                print(color.END)                                                                                      
+        
+           #Using Input function to take input from user
+                event = input("Enter event: ")
+                date = input("Enter date in the format (DD/MM/YYYY): ")
+                day,month,year = date.split('/')
+                
+           #Using try catch module to check the validation of date format     
+                isValidDate = True
+                try :
+                    datetime.datetime(int(year),int(month),int(day))
+                except ValueError :
+                    isValidDate = False
+                    
+           #Give an option to re-enter the valid date
+        
+                if(isValidDate != True):
+                
+                    print ("Invalid date entered")
+                    try_again = input("Try Again? Y for Yes, N for No: ")
+                    try_again = try_again.upper()
+                    
+                    if try_again == "Y":
+                        continue
+                    else:
+                        start = False
+         
+            #Add event only if an event doesn't already exist on same date
+                else:
+                    if date in list(calendar):
+                            print("\n An event is already created on date " + date)
+                            print("\n Please use update option")
+                    else:
+                        calendar[date] = event
+                        
+            #Using Dictionary Comprehension to add elements in calendar 
+        
+                        added_list = {" On date {}:{} Event is added".format(key, value) 
+                                      for key, value in calendar.items()}
+                        print(added_list)
+
+    #If user_choice is to Delete an event.       
+            elif user_choice == "D":
+                 if len(calendar.keys()) < 1:
+                    print ("Calendar is empty.")
+                 else:
+                    event = input("What event? ")
+                    for date in list(calendar):
+                        if event == calendar[date]:
+                            del calendar[date]
+                            print ("Event deleted")
+                            print (calendar)
+                        else:
+                            print ("Incorrect event entered")
+
+     #If user_choice to is to exit from the program                       
+            elif user_choice == "X":
+                start = False
+                
+     #Program executes only in valid option is selected
+            else:
+                print ("Invalid command entered")
+                start = False
+                
+#This function is used to create an menu option display for the making user-friendly program
+    def EventInterface(self):
+        print(color.BOLD + '==================================================================================' + color.END)
+        print(color.RED +  '=                      EVENT MANAGER PROGRAM                                     =' + color.END)
+        print(color.BOLD + '=           This program provide us with 4 funtionalities                        =' + color.END)
+        print(color.BOLD + '=           1. To create new event. Please enter A                               =' + color.END)
+        print(color.BOLD + '=           2. To view all event.   Please enter V                               =' + color.END)
+        print(color.BOLD + '=           3. To update any event. Please enter U                               =' + color.END)
+        print(color.BOLD + '=           4. To delete an event.  Please enter D                               =' + color.END)
+        print(color.BOLD + '=           To Exit from the program. Please enter X                             =' + color.END)
+        print(color.BOLD + '==================================================================================' + color.END)
+        print('\n')
+        
+#This is a main function.     
+if __name__ == '__main__':
+
+#Creating an instance of class    
+    x = EventAdder("SMDM-Assignment1","08/02/2019")
+    
+#Using the instance of class to invoke the methods of the class    
+    x.EventInterface()
+    x.Welcome()
+    x.EventHandler()
+#################################--------    END OF PROGRAM   --------------------########################################
+
